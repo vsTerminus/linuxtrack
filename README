@@ -1,3 +1,84 @@
+DEPENDENCIES:
+
+Check https://aur.archlinux.org/packages/linuxtrack but note this is a fork of a fork which builds on qt5, so you don't need qt4 or qtwebkit.
+
+	cwiid
+	libusb
+	mxml
+	opencv
+	v4l-utils
+	zlib
+	bison
+	gcc-obj-multilib
+	gdb
+	xplane-sdk-devel (Optional???)
+	qt5-base
+	nsis
+
+
+BUILD:
+
+	autoreconf
+    	./configure
+    	make
+
+
+INSTALL:
+
+	sudo make install
+
+UDEV:
+
+    	sudo cp src/99-TIR.rules /etc/udev/rules.d/
+    	sudo udevadm --reload
+    	sudo udevadm trigger
+
+	Distros other than Arch might be slightly different for the udev part, but basically get the rules file into a udev rules.d folder and restart udev.
+
+
+RUN:
+
+	ltr_gui
+
+	If errors, check the Misc tab there is a View Log button that will tell you what the app is looking for and not finding.
+
+
+FIRMWARE:
+
+	If you are dual booting you can grab your NaturalPoint folder from C:\Program Files (x86) and point ltr_gui there to install firmware "From unpacked".
+	If you are not, you need the installer and can either point it at the installer or use WINE to install TrackIR in a WINE Prefix and then point ltr_gui at that installation instead.
+
+
+WINE BRIDGE:
+
+	First you need to know the path to your WINEPREFIX for the game you're playing. For a default installtion this will be
+	~/.local/share/Steam/steamapps/compatdata/<steam game id>/pfx
+
+	MSFS2020 for example is 1250410
+	You an see a list ids for your installed Steam games with `protontricks --gui`
+
+	Now you can install the WINE Bridge and its dependencies into the prefix:
+	
+	WINEPREFIX=~/.local/share/Steam/steamapps/compatdata/1250410/pfx winetricks -q vcrun6 mfc42
+	WINEPREFIX=~/.local/share/Steam/steamapps/compatdata/1250410/pfx wine src/wine_bridge/linuxtrack-wine.exe
+
+	Once they are installed you can test it out by running
+	WINEPREFIX=~/.local/share/Steam/steamapps/compatdata/1250410/pfx wine explorer
+
+	Navigate to C:\Program Files (x86)\Linuxtrack
+	Make sure you can run Controller.exe (and define your hotkeys) and TrackIR.exe.
+
+
+STEAMTINKERLAUNCH:
+
+	The last step is to be able to launch the WINE Bridge and then the game you want to play, in the same prefix, in that order.
+	Current versions of Proton will not allow this, as they refuse to start the game if something is already running, and lock the prefix after they launch the game.
+	The way around this is by installing Steamtinkerlaunch and setting the game to use that as its Compatibility Layer in Steam.	
+
+
+------------------------
+
+
 Linuxtrack is a project aiming to bring head tracking to Linux and Mac.
 
 Current downloads can be found at https://github.com/uglyDwarf/linuxtrack/wiki/Downloads .
